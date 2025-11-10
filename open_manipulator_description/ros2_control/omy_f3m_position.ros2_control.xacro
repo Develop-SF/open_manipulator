@@ -105,6 +105,8 @@
         <param name="Operating Mode">3</param>
         <param name="Profile Acceleration Time">20</param>
         <param name="Profile Time">40</param>
+        <param name="Max Position Limit">524288</param>
+        <param name="Min Position Limit">-524288</param>
       </gpio>
       <gpio name="dxl2">
         <param name="type">dxl</param>
