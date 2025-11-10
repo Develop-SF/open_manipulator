@@ -49,7 +49,7 @@ target_include_directories(joint_trajectory_command_broadcaster PUBLIC
 target_link_libraries(joint_trajectory_command_broadcaster PUBLIC
   ${builtin_interfaces_TARGETS}
   ${trajectory_msgs_TARGETS}
-  ${controller_interface_LIBRARIES}
+  controller_interface::controller_interface
   joint_trajectory_command_broadcaster_parameters
   pluginlib::pluginlib
   rclcpp_lifecycle::rclcpp_lifecycle

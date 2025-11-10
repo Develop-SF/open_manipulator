@@ -44,7 +44,7 @@ target_include_directories(spring_actuator_controller PUBLIC
   $<INSTALL_INTERFACE:include/spring_actuator_controller>
 )
 target_link_libraries(spring_actuator_controller PUBLIC
-  ${controller_interface_LIBRARIES}
+  controller_interface::controller_interface
   pluginlib::pluginlib
   rclcpp::rclcpp
   rclcpp_lifecycle::rclcpp_lifecycle
