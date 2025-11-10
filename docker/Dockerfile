@@ -40,13 +40,13 @@ RUN cd ${COLCON_WS} && \
     rosdep install -i --from-path src --rosdistro $ROS_DISTRO --skip-keys="librealsense2" -y && \
     rm -rf /var/lib/apt/lists/*
 
-RUN bash -c "source /opt/ros/${ROS_DISTRO}/setup.bash && \
-    cd ${COLCON_WS} && \
-    colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release"
+#RUN bash -c "source /opt/ros/${ROS_DISTRO}/setup.bash && \
+#    cd ${COLCON_WS} && \
+#    colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release"
 
 RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> ~/.bashrc  && \
     echo "source ${COLCON_WS}/install/setup.bash" >> ~/.bashrc  && \
     echo "alias cb='colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release'" >> ~/.bashrc && \
-    echo "export ROS_DOMAIN_ID=30" >> ~/.bashrc
+    echo "export ROS_DOMAIN_ID=42" >> ~/.bashrc
 
 CMD ["bash"]
