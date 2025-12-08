@@ -30,7 +30,7 @@ RUN mkdir -p ${COLCON_WS}/src && \
     git clone -b humble https://github.com/ROBOTIS-GIT/dynamixel_hardware_interface.git && \
     git clone -b humble https://github.com/ROBOTIS-GIT/dynamixel_interfaces.git && \
     git clone -b humble https://github.com/ROBOTIS-GIT/DynamixelSDK.git && \
-    git clone -b feature-omy-humble https://github.com/ROBOTIS-GIT/open_manipulator.git && \
+    git clone -b yen/feature/humble_version https://github.com/Develop-SF/open_manipulator.git && \
     git clone -b r/4.56.4 https://github.com/IntelRealSense/realsense-ros.git && \
     cd realsense-ros && git checkout cbd8b8487d4c0126bb590822db9469414496e62a
 
@@ -40,9 +40,9 @@ RUN cd ${COLCON_WS} && \
     rosdep install -i --from-path src --rosdistro $ROS_DISTRO --skip-keys="librealsense2" -y && \
     rm -rf /var/lib/apt/lists/*
 
-#RUN bash -c "source /opt/ros/${ROS_DISTRO}/setup.bash && \
-#    cd ${COLCON_WS} && \
-#    colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release"
+RUN bash -c "source /opt/ros/${ROS_DISTRO}/setup.bash && \
+   cd ${COLCON_WS} && \
+   colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release"
 
 RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> ~/.bashrc  && \
     echo "source ${COLCON_WS}/install/setup.bash" >> ~/.bashrc  && \

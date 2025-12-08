@@ -4,7 +4,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: humble_version:test
+    image: humble_version:latest
     pull_policy: never
     tty: true
     restart: always
