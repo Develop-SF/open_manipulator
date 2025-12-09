@@ -52,19 +52,37 @@ target_include_directories(gravity_compensation_controller PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include/gravity_compensation_controller>
 )
-target_link_libraries(gravity_compensation_controller PUBLIC
-  controller_interface::controller_interface
-  pluginlib::pluginlib
-  rclcpp::rclcpp
-  rclcpp_lifecycle::rclcpp_lifecycle
-  realtime_tools::realtime_tools
-  ${backward_ros_LIBRARIES}
-  ${tl_expected_LIBRARIES}
-  ${urdf_LIBRARIES}
-  ${kdl_parser_TARGETS}
-  ${orocos_kdl_vendor_TARGETS}
-  gravity_compensation_controller_parameters
-)
+if(controller_interface_VERSION VERSION_GREATER "2.52.0")
+  message(STATUS "Using controller_interface > 2.52.0: linking with controller_interface::controller_interface")
+  target_link_libraries(gravity_compensation_controller PUBLIC
+    controller_interface::controller_interface
+    pluginlib::pluginlib
+    rclcpp::rclcpp
+    rclcpp_lifecycle::rclcpp_lifecycle
+    realtime_tools::realtime_tools
+    ${backward_ros_LIBRARIES}
+    ${tl_expected_LIBRARIES}
+    ${urdf_LIBRARIES}
+    ${kdl_parser_TARGETS}
+    ${orocos_kdl_vendor_TARGETS}
+    gravity_compensation_controller_parameters
+  )
+else()
+  message(STATUS "Using controller_interface <= 2.52.0: linking with \${controller_interface_LIBRARIES}")
+  target_link_libraries(gravity_compensation_controller PUBLIC
+    ${controller_interface_LIBRARIES}
+    pluginlib::pluginlib
+    rclcpp::rclcpp
+    rclcpp_lifecycle::rclcpp_lifecycle
+    realtime_tools::realtime_tools
+    ${backward_ros_LIBRARIES}
+    ${tl_expected_LIBRARIES}
+    ${urdf_LIBRARIES}
+    ${kdl_parser_TARGETS}
+    ${orocos_kdl_vendor_TARGETS}
+    gravity_compensation_controller_parameters
+  )
+endif()
 
 # Causes the visibility macros to use dllexport rather than dllimport,
 # which is appropriate when building the dll but not consuming it.

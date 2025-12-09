@@ -46,16 +46,31 @@ target_include_directories(joint_trajectory_command_broadcaster PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include/joint_trajectory_command_broadcaster>
 )
-target_link_libraries(joint_trajectory_command_broadcaster PUBLIC
-  ${builtin_interfaces_TARGETS}
-  ${trajectory_msgs_TARGETS}
-  controller_interface::controller_interface
-  joint_trajectory_command_broadcaster_parameters
-  pluginlib::pluginlib
-  rclcpp_lifecycle::rclcpp_lifecycle
-  realtime_tools::realtime_tools
-  urdf::urdf
-)
+if(controller_interface_VERSION VERSION_GREATER "2.52.0")
+  message(STATUS "Using controller_interface > 2.52.0: linking with controller_interface::controller_interface")
+  target_link_libraries(joint_trajectory_command_broadcaster PUBLIC
+    ${builtin_interfaces_TARGETS}
+    ${trajectory_msgs_TARGETS}
+    controller_interface::controller_interface
+    joint_trajectory_command_broadcaster_parameters
+    pluginlib::pluginlib
+    rclcpp_lifecycle::rclcpp_lifecycle
+    realtime_tools::realtime_tools
+    urdf::urdf
+  )
+else()
+  message(STATUS "Using controller_interface <= 2.52.0: linking with \${controller_interface_LIBRARIES}")
+  target_link_libraries(joint_trajectory_command_broadcaster PUBLIC
+    ${builtin_interfaces_TARGETS}
+    ${trajectory_msgs_TARGETS}
+    ${controller_interface_LIBRARIES}
+    joint_trajectory_command_broadcaster_parameters
+    pluginlib::pluginlib
+    rclcpp_lifecycle::rclcpp_lifecycle
+    realtime_tools::realtime_tools
+    urdf::urdf
+  )
+endif()
 # Causes the visibility macros to use dllexport rather than dllimport,
 # which is appropriate when building the dll but not consuming it.
 target_compile_definitions(joint_trajectory_command_broadcaster PRIVATE "JOINT_TRAJECTORY_COMMAND_BROADCASTER_BUILDING_DLL")
