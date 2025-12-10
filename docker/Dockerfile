@@ -28,6 +28,7 @@ WORKDIR ${COLCON_WS}
 RUN mkdir -p ${COLCON_WS}/src && \
     cd ${COLCON_WS}/src && \
     git clone -b humble https://github.com/ROBOTIS-GIT/dynamixel_hardware_interface.git && \
+    git -C dynamixel_hardware_interface checkout c566176c7950b3c7ea2e11e6d16c8bdd9c773444 && \
     git clone -b humble https://github.com/ROBOTIS-GIT/dynamixel_interfaces.git && \
     git clone -b humble https://github.com/ROBOTIS-GIT/DynamixelSDK.git && \
     git clone -b yen/feature/humble_version https://github.com/Develop-SF/open_manipulator.git && \
