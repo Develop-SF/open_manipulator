@@ -47,10 +47,10 @@ SelfCollisionNode::SelfCollisionNode()
   };
 
   joint_state_sub_ = this->create_subscription<sensor_msgs::msg::JointState>(
-    "/leader/joint_states", 10,
+    "joint_states", 10,
     std::bind(&SelfCollisionNode::joint_callback, this, std::placeholders::_1));
 
-  collision_pub_ = this->create_publisher<std_msgs::msg::Bool>("/collision_flag", 10);
+  collision_pub_ = this->create_publisher<std_msgs::msg::Bool>("collision_flag", 10);
   if (enable_marker_) {
     marker_pub_ = this->create_publisher<visualization_msgs::msg::MarkerArray>(
       "/collision_marker",

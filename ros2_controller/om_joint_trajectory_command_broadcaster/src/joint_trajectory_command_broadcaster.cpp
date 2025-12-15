@@ -125,7 +125,7 @@ controller_interface::CallbackReturn JointTrajectoryCommandBroadcaster::on_confi
   }
 
   collision_flag_sub_ = get_node()->create_subscription<std_msgs::msg::Bool>(
-    "/collision_flag", rclcpp::QoS(10),
+    "collision_flag", rclcpp::QoS(10),
     std::bind(&JointTrajectoryCommandBroadcaster::collision_callback, this, std::placeholders::_1));
   
   // const std::string & urdf = get_robot_description();

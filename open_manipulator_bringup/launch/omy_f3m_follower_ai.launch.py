@@ -138,7 +138,7 @@ def generate_launch_description():
         parameters=[{'robot_description': urdf_file}, controller_manager_config],
         output='both',
         condition=UnlessCondition(use_sim),
-        remappings=[('/arm_controller/joint_trajectory', '/leader/joint_trajectory')],
+        remappings=[('/arm_controller/joint_trajectory', '/robotis_leader/joint_trajectory')],
     )
 
     robot_controller_spawner = Node(
