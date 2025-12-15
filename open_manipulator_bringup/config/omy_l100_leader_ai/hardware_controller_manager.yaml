@@ -38,11 +38,11 @@
         - 0.1
         - 0.1
       torque_scaling_factors:
-        - 0.0
+        - 1.0
+        - 0.6
+        - 0.6
         - 0.4
         - 0.4
-        - 0.8
-        - 0.8
         - 1.0
       enable_spring_effect: false   # NOTE: Do NOT enable this option when the F3M follower is in the left-hand configuration.
                                     # Enabling it will apply a spring torque on joint3 and push the arm back.
