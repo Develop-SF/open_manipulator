@@ -21,7 +21,7 @@ from launch.actions import DeclareLaunchArgument, GroupAction, IncludeLaunchDesc
 from launch.conditions import IfCondition, UnlessCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
-from launch.substitutions import TextSubstitution
+from launch.substitutions import TextSubstitution, PythonExpression
 from launch_ros.actions import Node, PushRosNamespace
 from launch_ros.substitutions import FindPackageShare
 
@@ -77,7 +77,11 @@ def generate_launch_description():
 
     controller_manager_config = PathJoinSubstitution([
         FindPackageShare('open_manipulator_bringup'),
-        'config', 'omy_l100_leader_ai', 'hardware_controller_manager.yaml',
+        'config', 'omy_l100_leader_ai',
+        PythonExpression([
+            "'hardware_controller_manager.yaml' if '", namespace,
+            "' == 'robotis_leader' else 'hardware_controller_manager_right.yaml'"
+        ]),
     ])
 
     control_node = Node(
