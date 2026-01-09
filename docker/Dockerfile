@@ -49,8 +49,8 @@ RUN bash -c "source /opt/ros/${ROS_DISTRO}/setup.bash && \
 RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> ~/.bashrc  && \
     echo "source ${COLCON_WS}/install/setup.bash" >> ~/.bashrc  && \
     echo "alias cb='colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release'" >> ~/.bashrc && \
-    echo "alias cs='source ~/ros2_ws/install/setup.bash'" >> ~/.bashrc && \
-    export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp >> ~/.bashrc && \
+    echo "alias ss='source ~/ros2_ws/install/setup.bash'" >> ~/.bashrc && \
+    echo "export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp" >> ~/.bashrc && \
     echo "export ROS_DOMAIN_ID=42" >> ~/.bashrc
 
 CMD ["bash"]
