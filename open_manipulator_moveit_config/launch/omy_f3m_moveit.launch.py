@@ -63,6 +63,7 @@ def generate_launch_description():
         MoveItConfigsBuilder(robot_name='omy_f3m', package_name='open_manipulator_moveit_config')
         .robot_description_semantic(Path('config') / 'omy_f3m' / 'omy_f3m.srdf')
         .joint_limits(Path('config') / 'omy_f3m' / 'joint_limits.yaml')
+        .planning_pipelines("ompl", pipelines=['ompl', 'chomp', 'pilz_industrial_motion_planner'])
         .trajectory_execution(Path('config') / 'omy_f3m' / 'moveit_controllers.yaml')
         .to_moveit_configs()
     )
