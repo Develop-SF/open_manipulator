@@ -11,6 +11,24 @@
 
       gpio_command_controller:
         type: gpio_controllers/GpioCommandController
+      
+      la_robotis_joint_state_broadcaster:
+        type: joint_state_broadcaster/JointStateBroadcaster
+
+      la_robotis_arm_controller:
+        type: joint_trajectory_controller/JointTrajectoryController
+
+      la_robotis_gpio_command_controller:
+        type: gpio_controllers/GpioCommandController
+
+      ra_robotis_joint_state_broadcaster:
+        type: joint_state_broadcaster/JointStateBroadcaster
+
+      ra_robotis_arm_controller:
+        type: joint_trajectory_controller/JointTrajectoryController
+
+      ra_robotis_gpio_command_controller:
+        type: gpio_controllers/GpioCommandController
 
 /**:
   arm_controller:
@@ -49,5 +67,84 @@
             - B LED
       state_interfaces:
         omy_end:
+          - interfaces:
+            - Button Status
+
+/**:
+  la_robotis_arm_controller:
+    ros__parameters:
+      joints:
+        - la_robotis_joint1
+        - la_robotis_joint2
+        - la_robotis_joint3
+        - la_robotis_joint4
+        - la_robotis_joint5
+        - la_robotis_joint6
+        - la_robotis_rh_r1_joint
+      interface_name: position
+
+      command_interfaces:
+        - position
+
+      state_interfaces:
+        - position
+        - velocity
+
+      allow_partial_joints_goal: true
+
+/**:
+  la_robotis_gpio_command_controller:
+    ros__parameters:
+      type: gpio_controllers/GpioCommandController
+      gpios:
+        - la_robotis_omy_end
+      command_interfaces:
+        la_robotis_omy_end:
+          - interfaces:
+            - R LED
+            - G LED
+            - B LED
+      state_interfaces:
+        ra_robotis_omy_end:
+          - interfaces:
+            - Button Status
+
+/**:
+  ra_robotis_arm_controller:
+    ros__parameters:
+      joints:
+        - ra_robotis_joint1
+        - ra_robotis_joint2
+        - ra_robotis_joint3
+        - ra_robotis_joint4
+        - ra_robotis_joint5
+        - ra_robotis_joint6
+        - ra_robotis_rh_r1_joint
+
+      interface_name: position
+
+      command_interfaces:
+        - position
+
+      state_interfaces:
+        - position
+        - velocity
+
+      allow_partial_joints_goal: true
+
+/**:
+  ra_robotis_gpio_command_controller:
+    ros__parameters:
+      type: gpio_controllers/GpioCommandController
+      gpios:
+        - ra_robotis_omy_end
+      command_interfaces:
+        ra_robotis_omy_end:
+          - interfaces:
+            - R LED
+            - G LED
+            - B LED
+      state_interfaces:
+        ra_robotis_omy_end:
           - interfaces:
             - Button Status

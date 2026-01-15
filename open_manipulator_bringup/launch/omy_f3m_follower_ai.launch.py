@@ -17,7 +17,7 @@
 # Author: Wonho Yun, Sungho Woo, Woojin Wie
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, GroupAction
 from launch.actions import RegisterEventHandler
 from launch.conditions import IfCondition
 from launch.conditions import UnlessCondition
@@ -28,18 +28,24 @@ from launch.substitutions import LaunchConfiguration
 from launch.substitutions import PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
+from launch_ros.actions import PushRosNamespace
 
 
 def generate_launch_description():
     # Declare launch arguments
     declared_arguments = [
         DeclareLaunchArgument(
+            'namespace',
+            default_value="",
+            description="Namespace for the robot (choose '', 'la_robotis', or 'ra_robotis')",
+        ),
+        DeclareLaunchArgument(
             'start_rviz', default_value='false', description='Whether to execute rviz2'
         ),
         DeclareLaunchArgument(
             'prefix',
-            default_value='""',
-            description='Prefix of the joint and link names',
+            default_value="",
+            description="Prefix of the joint and link names (choose '', 'la_robotis_', or 'ra_robotis_')",
         ),
         DeclareLaunchArgument(
             'use_sim',
@@ -71,9 +77,15 @@ def generate_launch_description():
             default_value='initial_positions.yaml',
             description='Path to the initial position file',
         ),
+        DeclareLaunchArgument(
+            'publish_tf',
+            default_value='true',
+            description='Whether to run robot_state_publisher on this machine',
+        ),
     ]
 
     # Launch configurations
+    namespace = LaunchConfiguration('namespace')
     start_rviz = LaunchConfiguration('start_rviz')
     prefix = LaunchConfiguration('prefix')
     use_sim = LaunchConfiguration('use_sim')
@@ -82,6 +94,7 @@ def generate_launch_description():
     init_position = LaunchConfiguration('init_position')
     ros2_control_type = LaunchConfiguration('ros2_control_type')
     init_position_file = LaunchConfiguration('init_position_file')
+    publish_tf = LaunchConfiguration('publish_tf')
 
     # Generate URDF file using xacro
     urdf_file = Command([
@@ -138,16 +151,18 @@ def generate_launch_description():
         parameters=[{'robot_description': urdf_file}, controller_manager_config],
         output='both',
         condition=UnlessCondition(use_sim),
-        remappings=[('/arm_controller/joint_trajectory', '/robotis_leader/joint_trajectory')],
+        remappings=[
+            ('joint_states', '/joint_states'),
+            ('/arm_controller/joint_trajectory', '/robotis_leader/joint_trajectory')],
     )
 
     robot_controller_spawner = Node(
         package='controller_manager',
         executable='spawner',
         arguments=[
-            'arm_controller',
-            'joint_state_broadcaster',
-            # 'gpio_command_controller',
+            [prefix, 'arm_controller'],
+            [prefix, 'joint_state_broadcaster'],
+            # [prefix, 'gpio_command_controller'],
         ],
         output='both',
         parameters=[{'robot_description': urdf_file}],
@@ -158,6 +173,7 @@ def generate_launch_description():
         executable='robot_state_publisher',
         parameters=[{'robot_description': urdf_file, 'use_sim_time': use_sim}],
         output='both',
+        condition=IfCondition(publish_tf),
     )
 
     joint_trajectory_executor = Node(
@@ -190,13 +206,16 @@ def generate_launch_description():
         )
     )
 
+    group = GroupAction([
+        PushRosNamespace(namespace),
+        control_node,
+        robot_controller_spawner,
+        robot_state_publisher_node,
+        delay_rviz_after_joint_state_broadcaster_spawner,
+        delay_joint_trajectory_executor_after_controllers,
+    ])
+
     return LaunchDescription(
         declared_arguments
-        + [
-            control_node,
-            robot_controller_spawner,
-            robot_state_publisher_node,
-            delay_rviz_after_joint_state_broadcaster_spawner,
-            delay_joint_trajectory_executor_after_controllers,
-        ]
+        + [group]
     )
