@@ -1,0 +1,17 @@
+# please copy this file to /etc/systemd/system/omy-container.service
+[Unit]
+Description=OMY Follower Container Bringup (via container.sh)
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/data/docker/humble/open_manipulator/docker
+
+ExecStart=/bin/bash -lc './container.sh start'
+
+ExecStop=/bin/bash -lc 'printf "y\n" | ./container.sh stop'
+
+[Install]
+WantedBy=multi-user.target
