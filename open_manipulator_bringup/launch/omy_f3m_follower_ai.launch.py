@@ -29,6 +29,7 @@ from launch.substitutions import PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 from launch_ros.actions import PushRosNamespace
+from launch.substitutions import PythonExpression
 
 
 def generate_launch_description():
@@ -153,7 +154,18 @@ def generate_launch_description():
         condition=UnlessCondition(use_sim),
         remappings=[
             ('joint_states', '/joint_states'),
-            ('/arm_controller/joint_trajectory', '/robotis_leader/joint_trajectory')],
+            (
+                '/arm_controller/joint_trajectory',
+                PythonExpression([
+                    "'/' + (",
+                    "'", namespace, "' == 'la_robotis'",
+                    " and 'la_robotis_leader' or (",
+                    "'", namespace, "' == 'ra_robotis'",
+                    " and 'ra_robotis_leader' or 'robotis_leader')",
+                    ") + '/joint_trajectory'"
+                ])
+            ),
+        ],
     )
 
     robot_controller_spawner = Node(
