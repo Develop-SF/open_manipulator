@@ -47,7 +47,7 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(rs_multi_launch),
         launch_arguments={
             # cam 1 (wrist realsense D405)
-            'serial_no1': "'218622276423'",
+            'serial_no1': "'352122273879'",
             'camera_name1': 'cam_wrist',
             'camera_namespace1': 'camera',
             'depth_module.depth_profile1': '480x270x15',
@@ -56,7 +56,7 @@ def generate_launch_description():
             'colorizer.enable1': 'true',
 
             # cam 2 (top realsense D435)
-            'serial_no2': "'233522078616'",
+            'serial_no2': "'335222072418'",
             'camera_namespace2': 'camera',
             'camera_name2': 'cam_top',
             'depth_module.depth_profile2': '480x270x15',
