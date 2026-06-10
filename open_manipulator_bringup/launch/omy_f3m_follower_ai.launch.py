@@ -153,7 +153,17 @@ def generate_launch_description():
         output='both',
         condition=UnlessCondition(use_sim),
         remappings=[
-            ('joint_states', '/joint_states'),
+            (
+                'joint_states',
+                PythonExpression([
+                    "'/' + (",
+                    "'", namespace, "' == 'la_robotis'",
+                    " and 'la_robotis' or (",
+                    "'", namespace, "' == 'ra_robotis'",
+                    " and 'ra_robotis' or 'robotis')",
+                    ") + '/joint_states'"
+                ])
+            ),
             (
                 '/arm_controller/joint_trajectory',
                 PythonExpression([
