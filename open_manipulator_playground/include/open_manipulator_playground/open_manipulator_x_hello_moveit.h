@@ -17,11 +17,12 @@
 #ifndef OPEN_MANIPULATOR_PLAYGROUND__OPEN_MANIPULATOR_X_HELLO_MOVEIT_H_
 #define OPEN_MANIPULATOR_PLAYGROUND__OPEN_MANIPULATOR_X_HELLO_MOVEIT_H_
 
+#include <moveit/move_group_interface/move_group_interface.h>
+
 #include <memory>
 #include <chrono>
 #include <thread>
 
 #include <rclcpp/rclcpp.hpp>
-#include <moveit/move_group_interface/move_group_interface.h>
 
 #endif  // OPEN_MANIPULATOR_PLAYGROUND__OPEN_MANIPULATOR_X_HELLO_MOVEIT_H_

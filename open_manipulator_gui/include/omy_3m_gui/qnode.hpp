@@ -17,6 +17,8 @@
 #ifndef OMY_3M_GUI__QNODE_HPP_
 #define OMY_3M_GUI__QNODE_HPP_
 
+#include <moveit/move_group_interface/move_group_interface.h>
+
 #include <QThread>
 #include <QStringListModel>
 
@@ -29,8 +31,6 @@
 #include <rclcpp/rclcpp.hpp>
 #include <geometry_msgs/msg/pose.hpp>
 #include <std_srvs/srv/set_bool.hpp>
-
-#include <moveit/move_group_interface/move_group_interface.h>
 
 namespace omy_3m_gui
 {

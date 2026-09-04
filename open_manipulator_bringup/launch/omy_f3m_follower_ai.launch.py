@@ -26,10 +26,10 @@ from launch.substitutions import Command
 from launch.substitutions import FindExecutable
 from launch.substitutions import LaunchConfiguration
 from launch.substitutions import PathJoinSubstitution
-from launch_ros.actions import Node
-from launch_ros.substitutions import FindPackageShare
-from launch_ros.actions import PushRosNamespace
 from launch.substitutions import PythonExpression
+from launch_ros.actions import Node
+from launch_ros.actions import PushRosNamespace
+from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
@@ -37,7 +37,7 @@ def generate_launch_description():
     declared_arguments = [
         DeclareLaunchArgument(
             'namespace',
-            default_value="",
+            default_value='',
             description="Namespace for the robot (choose '', 'la_robotis', or 'ra_robotis')",
         ),
         DeclareLaunchArgument(
@@ -45,8 +45,11 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument(
             'prefix',
-            default_value="",
-            description="Prefix of the joint and link names (choose '', 'la_robotis_', or 'ra_robotis_')",
+            default_value='',
+            description=(
+                'Prefix of the joint and link names '
+                "(choose '', 'la_robotis_', or 'ra_robotis_')"
+            ),
         ),
         DeclareLaunchArgument(
             'use_sim',
