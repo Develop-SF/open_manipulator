@@ -248,7 +248,7 @@ def main(args=None):
     rclpy.init(args=args)
     node = JointTrajectoryExecutor()
     rclpy.spin(node, executor=rclpy.executors.SingleThreadedExecutor())
-    self.get_logger().info('ros != ok, shutdown node!!')
+    node.get_logger().info('ros != ok, shutdown node!!')
     node.destroy_node()
     rclpy.shutdown()
     sys.exit(0)
