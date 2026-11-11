@@ -1,11 +1,10 @@
 services:
-  humble_version:
-    container_name: humble_version
+  open_manipulator:
+    container_name: open_manipulator
     build:
       context: .
       dockerfile: Dockerfile
-    image: humble_version:latest
-    pull_policy: never
+    image: robotis/open-manipulator:latest
     tty: true
     restart: always
     cap_add:

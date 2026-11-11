@@ -1,7 +1,7 @@
 FROM robotis/ros:jazzy-ros-base-librealsense AS librealsense
 
-# Use the base ROS2 humble image
-FROM ros:humble-ros-base AS open-manipulator
+# Use the base ROS2 Jazzy image
+FROM ros:jazzy-ros-base AS open-manipulator
 
 COPY --from=librealsense /opt/librealsense /usr/local/
 COPY --from=librealsense /usr/local/lib/python3.12/dist-packages/pyrealsense2 /usr/local/lib/python3.12/dist-packages/pyrealsense2
@@ -18,7 +18,6 @@ RUN apt-get update && apt-get install -y \
     libglfw3-dev \
     ros-${ROS_DISTRO}-image-transport-plugins \
     ros-${ROS_DISTRO}-usb-cam \
-    ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
     vim \
     nano \
     && rm -rf /var/lib/apt/lists/*
@@ -28,11 +27,10 @@ WORKDIR ${COLCON_WS}
 
 RUN mkdir -p ${COLCON_WS}/src && \
     cd ${COLCON_WS}/src && \
-    git clone -b humble https://github.com/ROBOTIS-GIT/dynamixel_hardware_interface.git && \
-    git -C dynamixel_hardware_interface checkout c566176c7950b3c7ea2e11e6d16c8bdd9c773444 && \
-    git clone -b humble https://github.com/ROBOTIS-GIT/dynamixel_interfaces.git && \
-    git clone -b humble https://github.com/ROBOTIS-GIT/DynamixelSDK.git && \
-    git clone -b yen/feature/humble_version https://github.com/Develop-SF/open_manipulator.git && \
+    git clone -b jazzy https://github.com/ROBOTIS-GIT/dynamixel_hardware_interface.git && \
+    git clone -b jazzy https://github.com/ROBOTIS-GIT/dynamixel_interfaces.git && \
+    git clone -b jazzy https://github.com/ROBOTIS-GIT/DynamixelSDK.git && \
+    git clone -b jazzy https://github.com/ROBOTIS-GIT/open_manipulator.git && \
     git clone -b r/4.56.4 https://github.com/IntelRealSense/realsense-ros.git && \
     cd realsense-ros && git checkout cbd8b8487d4c0126bb590822db9469414496e62a
 
@@ -43,14 +41,12 @@ RUN cd ${COLCON_WS} && \
     rm -rf /var/lib/apt/lists/*
 
 RUN bash -c "source /opt/ros/${ROS_DISTRO}/setup.bash && \
-   cd ${COLCON_WS} && \
-   colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release"
+    cd ${COLCON_WS} && \
+    colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release"
 
 RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> ~/.bashrc  && \
     echo "source ${COLCON_WS}/install/setup.bash" >> ~/.bashrc  && \
     echo "alias cb='colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release'" >> ~/.bashrc && \
-    echo "alias ss='source ~/ros2_ws/install/setup.bash'" >> ~/.bashrc && \
-    echo "export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp" >> ~/.bashrc && \
-    echo "export ROS_DOMAIN_ID=42" >> ~/.bashrc
+    echo "export ROS_DOMAIN_ID=30" >> ~/.bashrc
 
 CMD ["bash"]

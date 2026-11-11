@@ -16,13 +16,12 @@
 
 #include "open_manipulator_playground/omy_f3m_hello_moveit.h"
 
-#include <moveit/move_group_interface/move_group_interface.h>
-
 #include <memory>
 #include <chrono>
 #include <thread>
 
 #include <rclcpp/rclcpp.hpp>
+#include <moveit/move_group_interface/move_group_interface.hpp>
 
 int main(int argc, char * argv[])
 {

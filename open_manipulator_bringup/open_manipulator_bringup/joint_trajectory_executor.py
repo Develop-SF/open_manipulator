@@ -247,11 +247,9 @@ class JointTrajectoryExecutor(Node):
 def main(args=None):
     rclpy.init(args=args)
     node = JointTrajectoryExecutor()
-    rclpy.spin(node, executor=rclpy.executors.SingleThreadedExecutor())
-    node.get_logger().info('ros != ok, shutdown node!!')
+    rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()
-    sys.exit(0)
 
 
 if __name__ == '__main__':
