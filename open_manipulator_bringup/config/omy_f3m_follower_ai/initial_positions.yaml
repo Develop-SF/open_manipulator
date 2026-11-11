@@ -9,10 +9,11 @@ joint_trajectory_executor:
       - joint6
       - rh_r1_joint
 
-    step_names: [home, ready]  # Names of the steps
+    step_names: [home, ready_left]  # Names of the steps
 
     home: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]  # Initial position
-    ready: [0.0, -1.5708, 2.6529, -1.0821, 1.5708, 0.0, 0.0]  # Ready position
+    ready_right: [0.0, -1.5708, 2.6529, -1.0821, 1.5708, 0.0, 0.0]  # Right Ready position
+    ready_left: [3.1416, 1.5708, -2.6529, 1.0821, -1.5708, 0.0, 0.0]  # Left Ready position
 
     duration: 10.0
     epsilon: 0.01

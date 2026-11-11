@@ -125,10 +125,14 @@ controller_interface::CallbackReturn JointTrajectoryCommandBroadcaster::on_confi
   }
 
   collision_flag_sub_ = get_node()->create_subscription<std_msgs::msg::Bool>(
-    "/collision_flag", rclcpp::QoS(10),
+    "collision_flag", rclcpp::QoS(10),
     std::bind(&JointTrajectoryCommandBroadcaster::collision_callback, this, std::placeholders::_1));
-
-  const std::string & urdf = get_robot_description();
+  
+  // const std::string & urdf = get_robot_description();
+  std::string robot_description;
+  get_node()->get_parameter("robot_description", robot_description);
+  
+  const std::string & urdf = robot_description;
   is_model_loaded_ = !urdf.empty() && model_.initString(urdf);
   if (!is_model_loaded_) {
     RCLCPP_ERROR(
@@ -295,10 +299,8 @@ controller_interface::return_type JointTrajectoryCommandBroadcaster::update(
     if (map_interface_to_joint_state_.count(interface_name) > 0) {
       interface_name = map_interface_to_joint_state_[interface_name];
     }
-    auto value = state_interface.get_optional();
-    if (value) {
-      name_if_value_mapping_[state_interface.get_prefix_name()][interface_name] = *value;
-    }
+    double value = state_interface.get_value();
+    name_if_value_mapping_[state_interface.get_prefix_name()][interface_name] = value;
   }
 
   // Publish JointTrajectory message with current positions
@@ -311,7 +313,7 @@ controller_interface::return_type JointTrajectoryCommandBroadcaster::update(
     traj_msg.points.clear();
     traj_msg.points.resize(1);
     traj_msg.points[0].positions.resize(num_joints, kUninitializedValue);
-
+    
     for (size_t i = 0; i < num_joints; ++i) {
       double pos_value =
         get_value(name_if_value_mapping_, joint_names_[i], HW_IF_POSITION);

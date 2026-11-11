@@ -17,7 +17,7 @@
 # Author: Wonho Yun, Sungho Woo, Woojin Wie
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, GroupAction
 from launch.actions import RegisterEventHandler
 from launch.conditions import IfCondition
 from launch.conditions import UnlessCondition
@@ -26,7 +26,9 @@ from launch.substitutions import Command
 from launch.substitutions import FindExecutable
 from launch.substitutions import LaunchConfiguration
 from launch.substitutions import PathJoinSubstitution
+from launch.substitutions import PythonExpression
 from launch_ros.actions import Node
+from launch_ros.actions import PushRosNamespace
 from launch_ros.substitutions import FindPackageShare
 
 
@@ -34,12 +36,20 @@ def generate_launch_description():
     # Declare launch arguments
     declared_arguments = [
         DeclareLaunchArgument(
+            'namespace',
+            default_value='',
+            description="Namespace for the robot (choose '', 'la_robotis', or 'ra_robotis')",
+        ),
+        DeclareLaunchArgument(
             'start_rviz', default_value='false', description='Whether to execute rviz2'
         ),
         DeclareLaunchArgument(
             'prefix',
-            default_value='""',
-            description='Prefix of the joint and link names',
+            default_value='',
+            description=(
+                'Prefix of the joint and link names '
+                "(choose '', 'la_robotis_', or 'ra_robotis_')"
+            ),
         ),
         DeclareLaunchArgument(
             'use_sim',
@@ -47,12 +57,12 @@ def generate_launch_description():
             description='Start robot in Gazebo simulation.',
         ),
         DeclareLaunchArgument(
-            'use_fake_hardware',
+            'use_mock_hardware',
             default_value='false',
             description='Use fake hardware mirroring command.',
         ),
         DeclareLaunchArgument(
-            'fake_sensor_commands',
+            'mock_sensor_commands',
             default_value='false',
             description='Enable fake sensor commands.',
         ),
@@ -71,17 +81,24 @@ def generate_launch_description():
             default_value='initial_positions.yaml',
             description='Path to the initial position file',
         ),
+        DeclareLaunchArgument(
+            'publish_tf',
+            default_value='true',
+            description='Whether to run robot_state_publisher on this machine',
+        ),
     ]
 
     # Launch configurations
+    namespace = LaunchConfiguration('namespace')
     start_rviz = LaunchConfiguration('start_rviz')
     prefix = LaunchConfiguration('prefix')
     use_sim = LaunchConfiguration('use_sim')
-    use_fake_hardware = LaunchConfiguration('use_fake_hardware')
-    fake_sensor_commands = LaunchConfiguration('fake_sensor_commands')
+    use_mock_hardware = LaunchConfiguration('use_mock_hardware')
+    mock_sensor_commands = LaunchConfiguration('mock_sensor_commands')
     init_position = LaunchConfiguration('init_position')
     ros2_control_type = LaunchConfiguration('ros2_control_type')
     init_position_file = LaunchConfiguration('init_position_file')
+    publish_tf = LaunchConfiguration('publish_tf')
 
     # Generate URDF file using xacro
     urdf_file = Command([
@@ -100,11 +117,11 @@ def generate_launch_description():
         'use_sim:=',
         use_sim,
         ' ',
-        'use_fake_hardware:=',
-        use_fake_hardware,
+        'use_mock_hardware:=',
+        use_mock_hardware,
         ' ',
-        'fake_sensor_commands:=',
-        fake_sensor_commands,
+        'mock_sensor_commands:=',
+        mock_sensor_commands,
         ' ',
         'ros2_control_type:=',
         ros2_control_type,
@@ -138,16 +155,39 @@ def generate_launch_description():
         parameters=[{'robot_description': urdf_file}, controller_manager_config],
         output='both',
         condition=UnlessCondition(use_sim),
-        remappings=[('/arm_controller/joint_trajectory', '/leader/joint_trajectory')],
+        remappings=[
+            (
+                'joint_states',
+                PythonExpression([
+                    "'/' + (",
+                    "'", namespace, "' == 'la_robotis'",
+                    " and 'la_robotis' or (",
+                    "'", namespace, "' == 'ra_robotis'",
+                    " and 'ra_robotis' or 'robotis')",
+                    ") + '/joint_states'"
+                ])
+            ),
+            (
+                '/arm_controller/joint_trajectory',
+                PythonExpression([
+                    "'/' + (",
+                    "'", namespace, "' == 'la_robotis'",
+                    " and 'la_robotis_leader' or (",
+                    "'", namespace, "' == 'ra_robotis'",
+                    " and 'ra_robotis_leader' or 'robotis_leader')",
+                    ") + '/joint_trajectory'"
+                ])
+            ),
+        ],
     )
 
     robot_controller_spawner = Node(
         package='controller_manager',
         executable='spawner',
         arguments=[
-            'arm_controller',
-            'joint_state_broadcaster',
-            # 'gpio_command_controller',
+            [prefix, 'arm_controller'],
+            [prefix, 'joint_state_broadcaster'],
+            # [prefix, 'gpio_command_controller'],
         ],
         output='both',
         parameters=[{'robot_description': urdf_file}],
@@ -158,6 +198,7 @@ def generate_launch_description():
         executable='robot_state_publisher',
         parameters=[{'robot_description': urdf_file, 'use_sim_time': use_sim}],
         output='both',
+        condition=IfCondition(publish_tf),
     )
 
     joint_trajectory_executor = Node(
@@ -190,13 +231,16 @@ def generate_launch_description():
         )
     )
 
+    group = GroupAction([
+        PushRosNamespace(namespace),
+        control_node,
+        robot_controller_spawner,
+        robot_state_publisher_node,
+        delay_rviz_after_joint_state_broadcaster_spawner,
+        delay_joint_trajectory_executor_after_controllers,
+    ])
+
     return LaunchDescription(
         declared_arguments
-        + [
-            control_node,
-            robot_controller_spawner,
-            robot_state_publisher_node,
-            delay_rviz_after_joint_state_broadcaster_spawner,
-            delay_joint_trajectory_executor_after_controllers,
-        ]
+        + [group]
     )
